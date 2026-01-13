@@ -12,7 +12,7 @@
     container_name: catalog_api
     build:
       context: .
-      dockerfile: eShop.services/catalog/Catalog.API/Dockerfile
+      dockerfile: eshop.services/catalog/Catalog.API/Dockerfile
     networks:
       - catalog_network
     depends_on:

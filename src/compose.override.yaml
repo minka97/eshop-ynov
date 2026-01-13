@@ -7,7 +7,7 @@
     ports:
       - "${CATALOG_POSTGRES_PORT}:5432"
     volumes:
-      - catalog_data:/var/lib/postgresql/data
+      - catalog_data:/var/lib/postgresql
     environment:
       POSTGRES_PASSWORD: ${CATALOG_POSTGRES_PASSWORD}
       POSTGRES_USER: ${CATALOG_POSTGRES_USER}
@@ -23,6 +23,6 @@
       - "6060:${CATALOG_API_PORT}" #http
     environment:
       - ASPNETCORE_HTTP_PORTS=${CATALOG_API_PORT}
-      - ConnectionStrings__CatalogConnection=Server=catalog.database;Port=${CATALOG_POSTGRES_PORT};Database=${CATALOG_POSTGRES_DB};Username=${CATALOG_POSTGRES_USER};Password=${CATALOG_POSTGRES_PASSWORD}
+      - ConnectionStrings__CatalogConnection=Server=catalog_database;Port=${CATALOG_POSTGRES_PORT};Database=${CATALOG_POSTGRES_DB};Username=${CATALOG_POSTGRES_USER};Password=${CATALOG_POSTGRES_PASSWORD}
   
 
