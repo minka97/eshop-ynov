@@ -43,9 +43,6 @@ public class ProductsController(ISender sender) : ControllerBase
     [ProducesResponseType(typeof(BadRequestObjectResult), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<IEnumerable<Product>>> GetProductsByCategory(string category)
     {
-        if (string.IsNullOrWhiteSpace(category))
-            return BadRequest("Category is required");
-        
         var result = await sender.Send(new GetProductsByCategoryQuery(category));
         return Ok(result.ListProducts);
     }
