@@ -34,7 +34,7 @@ Accept: application/json
 ### ----- READ BY ID -----
 ### Recuperation d'un produit par son ID
 ### (Remplacez l'ID par un ID valide de votre base)
-GET {{Catalog.API_HostAddress}}/products/019bc0d6-4539-47f1-a5ad-0ab2311ffcc5
+GET {{Catalog.API_HostAddress}}/products/b65f78a7-887f-4e71-b5ac-0cd499a874a6
 Accept: application/json
 
 ### ----- READ BY CATEGORY -----
@@ -62,5 +62,33 @@ Content-Type: application/json
 ### (Remplacez l'ID par un ID valide de votre base)
 DELETE {{Catalog.API_HostAddress}}/products/0199c3cc-d6e4-45cf-a860-2417ee6417f0
 Accept: application/json
+
+### ===================================
+### IMPORT / EXPORT EXCEL (.xlsx)
+### ===================================
+
+### ----- EXPORT -----
+### Exporter les produits en Excel (avec pagination)
+GET {{Catalog.API_HostAddress}}/products/export?pageNumber=1&pageSize=100
+Accept: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+
+### ----- IMPORT -----
+### Importer des produits depuis un fichier Excel (.xlsx)
+### Note: Pour tester l'import, utilisez Postman ou curl:
+### curl -X POST http://localhost:5240/products/import -F "file=@products.xlsx"
+###
+### Format Excel attendu (colonnes):
+### A: Id (vide pour creation, UUID pour mise a jour)
+### B: Name
+### C: Description
+### D: Price
+### E: ImageFile
+### F: Categories (separees par |)
+###
+### Exemple:
+### | Id                                   | Name           | Description | Price | ImageFile  | Categories |
+### |--------------------------------------|----------------|-------------|-------|------------|------------|
+### |                                      | Nouveau Produit| Desc        | 99.99 | image.png  | Cat1|Cat2  |
+### | 019bc0d6-4539-47f1-a5ad-0ab2311ffcc5 | Produit Existant| Desc       | 199.99| img.png    | Cat1       |
 
 ###
