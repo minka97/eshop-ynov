@@ -1,6 +1,6 @@
 using Catalog.API.Features.Products.Commands.CreateProduct;
+using Catalog.API.Features.Products.Commands.DeleteProduct;
 using Catalog.API.Features.Products.Commands.UpdateProduct;
-using Catalog.API.Features.Products.Queries;
 using Catalog.API.Features.Products.Queries.GetProductById;
 using Catalog.API.Features.Products.Queries.GetProductsByCategory;
 using Catalog.API.Models;
@@ -102,11 +102,10 @@ public class ProductsController(ISender sender) : ControllerBase
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(NotFoundObjectResult), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Product>> DeleteProduct(Guid id)
+    public async Task<ActionResult<bool>> DeleteProduct(Guid id)
     {
-        // TODO
-        var result = await sender.Send(new ());
-        return Ok();
+        var result = await sender.Send(new DeleteProductCommand(id));
+        return Ok(result);
     }
     
     // TODO : faire une ressource pour importer à partir d'un fichier excel les produits
