@@ -407,3 +407,32 @@ serilog.*.json
 !serilog.json
 sources/.DS_Store
 .DS_Store
+
+# Claude Code temporary files
+tmpclaude-*
+.claude
+
+# Environment files (secrets)
+.env
+.env.local
+.env.*.local
+*.env
+
+# SSL/TLS certificates
+*.pem
+*.key
+*.crt
+
+# Docker local overrides (optional - décommenter si besoin)
+# docker-compose.override.yml
+# compose.override.yaml
+
+# IDE
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
