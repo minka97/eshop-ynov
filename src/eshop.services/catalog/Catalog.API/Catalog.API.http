@@ -1,6 +1,66 @@
 @Catalog.API_HostAddress = http://localhost:5240
 
-GET {{Catalog.API_HostAddress}}/weatherforecast/
+### ===================================
+### CATALOG API - TESTS
+### ===================================
+
+### ----- Health Check -----
+### Etat de l'api Catalog
+GET {{Catalog.API_HostAddress}}/health
+Accept: application/json
+
+### ===================================
+### PRODUCTS - CRUD Operations
+### ===================================
+
+### ----- CREATE -----
+### Creation de Produit
+POST {{Catalog.API_HostAddress}}/products
+Content-Type: application/json
+
+{
+    "name": "Produit dj",
+    "categories": ["c1", "dj"],
+    "description": "Description Product dj",
+    "imageFile": "Image file Product dj",
+    "price": 399
+}
+
+### ----- READ -----
+### Recuperation de la liste des produits (avec pagination)
+GET {{Catalog.API_HostAddress}}/products?pageNumber=1&pageSize=5
+Accept: application/json
+
+### ----- READ BY ID -----
+### Recuperation d'un produit par son ID
+### (Remplacez l'ID par un ID valide de votre base)
+GET {{Catalog.API_HostAddress}}/products/019bc0d6-4539-47f1-a5ad-0ab2311ffcc5
+Accept: application/json
+
+### ----- READ BY CATEGORY -----
+### Recuperation des produits par categorie
+GET {{Catalog.API_HostAddress}}/products/category/c1
+Accept: application/json
+
+### ----- UPDATE -----
+### Mise a jour de Produit
+### (Remplacez l'ID par un ID valide de votre base)
+PUT {{Catalog.API_HostAddress}}/products/019bc0d6-4539-47f1-a5ad-0ab2311ffcc5
+Content-Type: application/json
+
+{
+    "id": "019bc0d6-4539-47f1-a5ad-0ab2311ffcc5",
+    "name": "New Product Updated dj",
+    "categories": ["c1", "c2", "c3", "c4"],
+    "description": "Description Product A",
+    "imageFile": "Image file Product A after update",
+    "price": 280
+}
+
+### ----- DELETE -----
+### Suppression d'un produit
+### (Remplacez l'ID par un ID valide de votre base)
+DELETE {{Catalog.API_HostAddress}}/products/0199c3cc-d6e4-45cf-a860-2417ee6417f0
 Accept: application/json
 
 ###

@@ -86,7 +86,10 @@ public class ProductsController(ISender sender) : ControllerBase
     [ProducesResponseType(typeof(NotFoundObjectResult), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<bool>> UpdateProduct(Guid id, [FromBody] UpdateProductCommand request)
     {
-        // TODO
+        // Vérifier que l'ID de l'URL correspond à l'ID du body
+        if (id != request.Id)
+            return BadRequest("L'ID de l'URL ne correspond pas à l'ID du produit");
+
         var result = await sender.Send(request);
         return Ok(result.IsSuccessful);
     }
