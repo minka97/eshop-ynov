@@ -1,6 +1,7 @@
 using Catalog.API.Features.Products.Commands.CreateProduct;
 using Catalog.API.Features.Products.Commands.UpdateProduct;
 using Catalog.API.Features.Products.Queries.GetProductById;
+using Catalog.API.Features.Products.Queries.GetProducts;
 using Catalog.API.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +15,8 @@ namespace Catalog.API.Controllers;
 [ApiController]
 [Route("[controller]")]
 [Produces("application/json")]
-public class ProductsController(ISender sender) : ControllerBase
+public class 
+    ProductsController(ISender sender) : ControllerBase
 {
     /// <summary>
     /// Retrieves a product by its unique identifier.
@@ -45,8 +47,8 @@ public class ProductsController(ISender sender) : ControllerBase
         if (string.IsNullOrWhiteSpace(category))
             return BadRequest("Category is required");
         
-        var result = await sender.Send(new ());
-        return Ok();
+        var result = await sender.Send(new GetProductsByCategoryQuery(category));
+        return Ok(result.Products);
     }
 
     /// <summary>
@@ -56,12 +58,11 @@ public class ProductsController(ISender sender) : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<Product>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<Product>>> GetProducts(
-        [FromQuery] int pageNumber
-       , [FromQuery] int pageSize)
+        [FromQuery] int numPage = 1,
+        [FromQuery] int sizePage = 12)
     {
-        // TODO
-        var result = await sender.Send(new ()); 
-        return Ok();
+        var result = await sender.Send(new GetProductsQuery(numPage, sizePage)); 
+        return Ok(result.Products);
     }
 
     /// <summary>
