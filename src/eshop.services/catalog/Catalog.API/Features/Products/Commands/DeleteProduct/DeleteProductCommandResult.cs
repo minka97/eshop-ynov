@@ -1,6 +1,6 @@
-namespace Catalog.API.Features.Products.Commands.CreateProduct;
+namespace Catalog.API.Features.Products.Commands.DeleteProduct;
 
 /// <summary>
-/// Represents the result of the CreateProduct command execution.
+/// Represents the result of the DeleteProduct command execution.
 /// </summary>
-public record CreateProductCommandResult(Guid Id);
+public record DeleteProductCommandResult(bool Result);
