@@ -16,3 +16,14 @@ public class BasketNotFoundException : NotFoundException
     /// </summary>
     public BasketNotFoundException(string userName) : base("panier", userName) { }
 }
+
+public class ProductNotFoundException : NotFoundException
+{
+    /// <summary>
+    /// Represents an exception that is thrown when a specified product cannot be found.
+    /// This exception is typically used to indicate that the requested product resource
+    /// is missing or does not exist in the system.
+    /// </summary>
+    public ProductNotFoundException(string idProduit) : base("produit", idProduit) { }
+}
+

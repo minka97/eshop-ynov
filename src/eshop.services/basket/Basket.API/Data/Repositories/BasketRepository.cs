@@ -52,4 +52,11 @@ public class BasketRepository(IDocumentSession session) : IBasketRepository
         await session.SaveChangesAsync(cancellationToken);
         return basket;
     }
+
+    public async Task<ShoppingCart> UpdateBasketAsync(ShoppingCart basket, CancellationToken cancellationToken = default)
+    {
+        session.Store(basket);
+        await session.SaveChangesAsync(cancellationToken);
+        return basket;
+    }
 }
