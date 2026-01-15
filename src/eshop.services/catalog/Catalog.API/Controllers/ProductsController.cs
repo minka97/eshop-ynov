@@ -3,6 +3,7 @@ using Catalog.API.Features.Products.Commands.DeleteProduct;
 using Catalog.API.Features.Products.Commands.UpdateProduct;
 using Catalog.API.Features.Products.Queries.GetProductById;
 using Catalog.API.Features.Products.Queries.GetProductsByCategory;
+using Catalog.API.Features.Products.Queries.GetProducts;
 using Catalog.API.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -54,12 +55,11 @@ public class ProductsController(ISender sender) : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<Product>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<Product>>> GetProducts(
-        [FromQuery] int pageNumber
-       , [FromQuery] int pageSize)
+        [FromQuery] int pageNumber,
+        [FromQuery] int pageSize)   
     {
-        // TODO
-        var result = await sender.Send(new ()); 
-        return Ok();
+            var result = await sender.Send(new GetProductsQuery(pageNumber, pageSize)); 
+        return Ok(result.Products);
     }
 
     /// <summary>
