@@ -36,16 +36,17 @@ public class AddItemInCartCommandHandler(IBasketRepository repository, CatalogCl
             throw new BasketNotFoundException(request.Username);
         }
 
-        var isProductExist = await catalogClient.ProductExists(request.Item.ProductId, cancellationToken);
+        var shoppingCartItem = await catalogClient.GetProductById(request.Item.ProductId, cancellationToken);
 
-        if (!isProductExist)
+        if (shoppingCartItem is null)
         {
             throw new ProductNotFoundException(request.Item.ProductId.ToString());
         }
         
         var tempList = shoppingCart.Items.ToList();
-        
-        tempList.Add(request.Item);
+        shoppingCartItem.Color = request.Item.Color;
+        shoppingCartItem.Quantity = request.Item.Quantity;
+        tempList.Add(shoppingCartItem);
         
         shoppingCart.Items = tempList;
         
