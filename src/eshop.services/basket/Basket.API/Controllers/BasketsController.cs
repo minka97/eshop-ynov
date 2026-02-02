@@ -1,5 +1,7 @@
 using Basket.API.Features.Baskets.Commands.CreateBasket;
 using Basket.API.Features.Baskets.Commands.DeleteBasket;
+using Basket.API.Features.Baskets.Commands.DeleteBasketItem;
+using Basket.API.Features.Baskets.Commands.UpdateItemQuantity;
 using Basket.API.Features.Baskets.Queries.GetBasketByUserName;
 using Basket.API.Models;
 using MediatR;
@@ -58,8 +60,43 @@ public class BasketsController (ISender sender) : ControllerBase
         return Ok(result.IsSuccess);
     }
     
-    // TODO Update basket product quantity
+    /// <summary>
+    /// Updates the quantity of a specific item in the user's shopping basket.
+    /// </summary>
+    /// <param name="userName">The username whose shopping basket is to be updated.</param>
+    /// <param name="productId">The unique identifier of the product to update.</param>
+    /// <param name="request">The request containing the new quantity.</param>
+    /// <returns>The result of the update operation with the updated shopping cart.</returns>
+    [HttpPatch("items/{productId:guid}")]
+    [ProducesResponseType(typeof(UpdateItemQuantityCommandResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(NotFoundObjectResult), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(BadRequestObjectResult), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<UpdateItemQuantityCommandResult>> UpdateItemQuantity(
+        string userName, 
+        Guid productId, 
+        [FromBody] UpdateItemQuantityRequest request)
+    {
+        var command = new UpdateItemQuantityCommand(userName, productId, request.Quantity);
+        var result = await sender.Send(command);
+        return Ok(result);
+    }
     
-    //TODO Delete item in user basket
+    /// <summary>
+    /// Deletes a specific item from the user's shopping basket.
+    /// </summary>
+    /// <param name="userName">The username whose shopping basket item is to be deleted.</param>
+    /// <param name="productId">The unique identifier of the product to remove from the basket.</param>
+    /// <returns>The result of the delete operation with the updated shopping cart.</returns>
+    [HttpDelete("items/{productId:guid}")]
+    [ProducesResponseType(typeof(DeleteBasketItemCommandResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(NotFoundObjectResult), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<DeleteBasketItemCommandResult>> DeleteBasketItem(
+        string userName, 
+        Guid productId)
+    {
+        var command = new DeleteBasketItemCommand(userName, productId);
+        var result = await sender.Send(command);
+        return Ok(result);
+    }
     
 }
