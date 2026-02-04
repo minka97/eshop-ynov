@@ -8,22 +8,38 @@ package discount;
 service DiscountProtoService {
   
   //Discount CRUD opérations
-  rpc GetDiscount (GetDiscountRequest) returns (CouponModel);
+  rpc GetDiscount (GetDiscountRequest) returns (GetDiscountResponse);
   rpc CreateDiscount (CreateDiscountRequest) returns (CouponModel);
   rpc UpdateDiscount (UpdateDiscountRequest) returns (CouponModel);
   rpc DeleteDiscount (DeleteDiscountRequest) returns (DeleteDiscountResponse);
   
 }
+enum CouponType{
+  Percentage=0;
+  Code=1;
+}
 
 message GetDiscountRequest {
   string productName = 1;
+  string code = 2;
 }
+
+message GetDiscountResponse {
+  repeated CouponModel coupons = 1;
+}
+
 
 message CouponModel {
   int32 id = 1;
   string productName = 2;
   string description = 3;
-  double amount = 4;
+  CouponType couponType = 4;
+  string code = 5;
+  double percentage = 6;
+  double amount = 7;
+  bool isCumulative = 8;
+  double maxCumulativePercentage = 9;
+  int32 maxRedemptions = 10;
 }
 
 message CreateDiscountRequest {
