@@ -3,7 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 using Ordering.Application.Features.Orders.Commands.CreateOrder;
 using Ordering.Application.Features.Orders.Commands.DeleteOrder;
 using Ordering.Application.Features.Orders.Commands.UpdateOrder;
+using Ordering.Application.Features.Orders.Commands.UpdateOrderStatus;
 using Ordering.Application.Features.Orders.Dtos;
+using Ordering.Application.Features.Orders.Queries.GetOrderById;
+using Ordering.Application.Features.Orders.Queries.GetOrders;
+using Ordering.Application.Features.Orders.Queries.GetOrdersByCustomer;
+using Ordering.Application.Features.Orders.Queries.GetOrdersByName;
+using Ordering.Domain.Enums;
 
 namespace Ordering.API.Controllers;
 
@@ -26,8 +32,9 @@ public class OrdersController(ISender sender) : ControllerBase
     [ProducesResponseType(typeof(NotFoundObjectResult), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<IEnumerable<OrderDto>>> GetOrdersByName(string name)
     {
-        // TODO
-        return Ok();
+        var query = new GetOrdersByNameQuery(name);
+        var result = await sender.Send(query);
+        return Ok(result.Orders);
     }
 
     /// <summary>
@@ -40,8 +47,9 @@ public class OrdersController(ISender sender) : ControllerBase
     [ProducesResponseType(typeof(NotFoundObjectResult), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<IEnumerable<OrderDto>>> GetOrdersByCustomerId(Guid customerId)
     {
-        // TODO
-        return Ok();
+        var query = new GetOrdersByCustomerQuery(customerId);
+        var result = await sender.Send(query);
+        return Ok(result.Orders);
     }
 
 
@@ -54,10 +62,32 @@ public class OrdersController(ISender sender) : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<OrderDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(NotFoundObjectResult), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<IEnumerable<OrderDto>>> GetOrders([FromQuery] int pageIndex ,[FromQuery]  int pageSize)
+    public async Task<ActionResult<IEnumerable<OrderDto>>> GetOrders([FromQuery] int pageIndex = 0, [FromQuery] int pageSize = 10)
     {
-        // TODO
-        return Ok();
+        var query = new GetOrdersQuery(pageIndex, pageSize);
+        var result = await sender.Send(query);
+        return Ok(result.Orders);
+    }
+
+    /// <summary>
+    /// Retrieves a specific order by its unique identifier.
+    /// </summary>
+    /// <param name="orderId">The unique identifier of the order to retrieve.</param>
+    /// <returns>The <see cref="OrderDto"/> object if found, or 404 if not found.</returns>
+    [HttpGet("id/{orderId:guid}")]
+    [ProducesResponseType(typeof(OrderDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(NotFoundObjectResult), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<OrderDto>> GetOrderById(Guid orderId)
+    {
+        var query = new GetOrderByIdQuery(orderId);
+        var result = await sender.Send(query);
+        
+        if (result.Order == null)
+        {
+            return NotFound($"Order with ID {orderId} not found");
+        }
+        
+        return Ok(result.Order);
     }
 
     /// <summary>
@@ -100,4 +130,37 @@ public class OrdersController(ISender sender) : ControllerBase
         var result = await sender.Send(new DeleteOrderCommand(orderId));
         return Ok(result.IsSuccess);
     }
+
+    /// <summary>
+    /// Met à jour le statut d'une commande
+    /// </summary>
+    /// <param name="orderId">L'ID de la commande</param>
+    /// <param name="request">Le nouveau statut</param>
+    /// <returns>Résultat de l'opération</returns>
+    [HttpPatch("{orderId:guid}/status")]
+    [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(NotFoundObjectResult), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<bool>> UpdateOrderStatus(Guid orderId, [FromBody] UpdateOrderStatusRequest request)
+    {
+        // Créer la commande
+        var command = new UpdateOrderStatusCommand(orderId, request.NewStatus);
+        
+        // Envoyer au handler
+        var result = await sender.Send(command);
+        
+        // Retourner le résultat
+        if (result.IsSuccess)
+        {
+            return Ok(true); // Statut mis à jour
+        }
+        else
+        {
+            return NotFound("Commande non trouvée"); // Erreur
+        }
+    }
 }
+
+/// <summary>
+/// Données de la requête pour mettre à jour le statut
+/// </summary>
+public record UpdateOrderStatusRequest(OrderStatus NewStatus);
