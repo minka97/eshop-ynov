@@ -113,7 +113,7 @@ public class OrdersController(ISender sender) : ControllerBase
     [ProducesResponseType(typeof(NotFoundObjectResult), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<bool>> DeleteOrder(Guid orderId)
     {
-        var result = await sender.Send(new DeleteOrderCommand(orderId));
+        var result = await sender.Send(new DeleteOrderCommand(orderId.ToString()));
         return Ok(result.IsSuccess);
     }
 }
