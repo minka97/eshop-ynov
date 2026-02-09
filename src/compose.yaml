@@ -8,10 +8,21 @@
     networks:
       - messageBroker_network
   
+  # Mailpit - SMTP de développement pour capturer les emails
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: mailpit
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # WebUI
+    networks:
+      - email_network
+    restart: unless-stopped
+  
   ### Service Catalog ###
   
   catalog.database:
-    image: postgres:latest
+    image: postgres:16
     container_name: catalog_database
     networks:
       - catalog_network
@@ -21,7 +32,7 @@
     container_name: catalog_api
     build:
       context: .
-      dockerfile: eShop.Services/Catalog/Catalog.API/Dockerfile
+      dockerfile: eshop.services/catalog/Catalog.API/Dockerfile
     networks:
       - catalog_network
     depends_on:
@@ -39,7 +50,7 @@
     restart: always
     build:
       context: .
-      dockerfile: eShop.Services/Discount/Discount.Grpc/Dockerfile
+      dockerfile: eshop.services/discount/Discount.Grpc/Dockerfile
     networks:
       - discount_network
       - basket_network
@@ -47,7 +58,7 @@
   ### Service Basket ###
   
   basket.database:
-    image: postgres:latest
+    image: postgres:16
     container_name: basket_database
     networks:
       - basket_network
@@ -63,7 +74,7 @@
     container_name: basket_api
     build:
       context: .
-      dockerfile: eShop.Services/Basket/Basket.API/Dockerfile
+      dockerfile: eshop.services/basket/Basket.API/Dockerfile
     networks:
       - basket_network
       - messageBroker_network
@@ -99,7 +110,7 @@
     container_name: ordering_api
     build:
       context: .
-      dockerfile: eShop.Services/Ordering/Ordering.API/Dockerfile
+      dockerfile: eshop.services/ordering/Ordering.API/Dockerfile
     networks:
       - ordering_network
       - messageBroker_network
@@ -112,6 +123,44 @@
         condition: service_healthy
         required: true
         restart: true
+
+  ### Service Email ###
+  
+  email.api:
+    image: email.api
+    container_name: email_api
+    build:
+      context: .
+      dockerfile: eshop.services/email/Email.API/Dockerfile
+    ports:
+      - "6070:8080"
+      - "6071:8081"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - ASPNETCORE_URLS=${ASPNETCORE_URLS}
+      - SmtpSettings__Server=${SMTP_SERVER}
+      - SmtpSettings__Port=${SMTP_PORT}
+      - SmtpSettings__Username=${SMTP_USERNAME}
+      - SmtpSettings__Password=${SMTP_PASSWORD}
+      - SmtpSettings__EnableSsl=${SMTP_ENABLE_SSL}
+      - SmtpSettings__FromEmail=${SMTP_FROM_EMAIL}
+      - SmtpSettings__FromName=${SMTP_FROM_NAME}
+      - MessageBroker__Host=${RABBITMQ_HOST}
+      - MessageBroker__UserName=${RABBITMQ_USERNAME}
+      - MessageBroker__Password=${RABBITMQ_PASSWORD}
+    networks:
+      - email_network
+      - messageBroker_network
+    depends_on:
+      messageBroker:
+        condition: service_healthy
+        required: true
+        restart: true
+      mailpit:
+        condition: service_started
+        required: true
+        restart: true
+    restart: unless-stopped
 
 ### Shared infrastructure ###
 volumes:
@@ -140,3 +189,5 @@ networks:
     name: ordering_network
   messageBroker_network:
     name: messageBroker_network
+  email_network:
+    name: email_network

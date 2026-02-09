@@ -38,7 +38,7 @@ public class DiscountServiceServer(DiscountContext dbContext, ILogger<DiscountSe
         if (coupon == null)
             throw new RpcException(new Status(StatusCode.NotFound, $"Coupon with name {request.ProductName} not found"));
         
-        logger.LogInformation("Discount retrieved for {ProductName}: {Amount}", coupon.ProductName, coupon.Amount);
+        logger.LogInformation("Discount retrieved for {ProductName}", coupon.ProductName);
         
         return coupon.Adapt<CouponModel>();
     }
@@ -63,7 +63,7 @@ public class DiscountServiceServer(DiscountContext dbContext, ILogger<DiscountSe
         logger.LogInformation("Creating new discount for {ProductName}", coupon.ProductName);
         await dbContext.Coupons.AddAsync(coupon);
         await dbContext.SaveChangesAsync();
-        logger.LogInformation("Discount created for {ProductName}: {Amount}", coupon.ProductName, coupon.Amount);
+        logger.LogInformation("Discount created for {ProductName}", coupon.ProductName);
         return coupon.Adapt<CouponModel>();
     }
 
@@ -95,7 +95,7 @@ public class DiscountServiceServer(DiscountContext dbContext, ILogger<DiscountSe
         dbContext.Coupons.Update(coupon);
         await dbContext.SaveChangesAsync();
         
-        logger.LogInformation("Discount updated for {ProductName}: {Amount}", coupon.ProductName, coupon.Amount);
+        logger.LogInformation("Discount updated for {ProductName}", coupon.ProductName);
         return coupon.Adapt<CouponModel>();
     }
 

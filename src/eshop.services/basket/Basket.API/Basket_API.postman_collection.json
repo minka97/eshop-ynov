@@ -1,0 +1,325 @@
+{
+    "info": {
+        "name": "Basket API - eShop",
+        "_postman_id": "basket-api-collection-v1",
+        "description": "Collection complète pour tester l'API Basket de eShop. Permet de gérer les paniers d'achat des utilisateurs.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "1. Récupérer un panier",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "pm.test(\"Status code is 200\", function () {",
+                            "    pm.response.to.have.status(200);",
+                            "});",
+                            "",
+                            "pm.test(\"Response has userName\", function () {",
+                            "    var jsonData = pm.response.json();",
+                            "    pm.expect(jsonData).to.have.property('userName');",
+                            "});",
+                            "",
+                            "pm.test(\"Response has items array\", function () {",
+                            "    var jsonData = pm.response.json();",
+                            "    pm.expect(jsonData).to.have.property('items');",
+                            "    pm.expect(jsonData.items).to.be.an('array');",
+                            "});",
+                            "",
+                            "pm.test(\"Response has total\", function () {",
+                            "    var jsonData = pm.response.json();",
+                            "    pm.expect(jsonData).to.have.property('total');",
+                            "});"
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{baseUrl}}/baskets/{{userName}}",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "baskets",
+                        "{{userName}}"
+                    ]
+                },
+                "description": "Récupère le panier complet d'un utilisateur avec tous ses articles."
+            },
+            "response": []
+        },
+        {
+            "name": "2. Créer un panier",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "pm.test(\"Status code is 201\", function () {",
+                            "    pm.response.to.have.status(201);",
+                            "});",
+                            "",
+                            "pm.test(\"Response has isSuccess\", function () {",
+                            "    var jsonData = pm.response.json();",
+                            "    pm.expect(jsonData).to.have.property('isSuccess');",
+                            "    pm.expect(jsonData.isSuccess).to.be.true;",
+                            "});",
+                            "",
+                            "pm.test(\"Response has userName\", function () {",
+                            "    var jsonData = pm.response.json();",
+                            "    pm.expect(jsonData).to.have.property('userName');",
+                            "});"
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"cart\": {\n    \"userName\": \"{{userName}}\",\n    \"items\": [\n      {\n        \"quantity\": 1,\n        \"color\": \"Noir\",\n        \"productName\": \"MacBook Pro 16\",\n        \"price\": 2499.99,\n        \"productId\": \"{{productId1}}\"\n      },\n      {\n        \"quantity\": 2,\n        \"color\": \"Blanc\",\n        \"productName\": \"iPad Air\",\n        \"price\": 699.99,\n        \"productId\": \"{{productId2}}\"\n      }\n    ]\n  }\n}"
+                },
+                "url": {
+                    "raw": "{{baseUrl}}/baskets/{{userName}}",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "baskets",
+                        "{{userName}}"
+                    ]
+                },
+                "description": "Crée un nouveau panier pour un utilisateur avec des articles."
+            },
+            "response": []
+        },
+        {
+            "name": "3. Ajouter un article au panier",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "pm.test(\"Status code is 200\", function () {",
+                            "    pm.response.to.have.status(200);",
+                            "});",
+                            "",
+                            "pm.test(\"Response has userName\", function () {",
+                            "    var jsonData = pm.response.json();",
+                            "    pm.expect(jsonData).to.have.property('userName');",
+                            "});",
+                            "",
+                            "pm.test(\"Items array is not empty\", function () {",
+                            "    var jsonData = pm.response.json();",
+                            "    pm.expect(jsonData.items.length).to.be.above(0);",
+                            "});"
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"quantity\": 1,\n  \"color\": \"Bleu\",\n  \"productName\": \"AirPods Pro\",\n  \"price\": 249.99,\n  \"productId\": \"{{productId3}}\"\n}"
+                },
+                "url": {
+                    "raw": "{{baseUrl}}/baskets/{{userName}}/items",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "baskets",
+                        "{{userName}}",
+                        "items"
+                    ]
+                },
+                "description": "Ajoute un nouvel article dans le panier existant d'un utilisateur."
+            },
+            "response": []
+        },
+        {
+            "name": "4. Modifier la quantité d'un article",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "pm.test(\"Status code is 200\", function () {",
+                            "    pm.response.to.have.status(200);",
+                            "});",
+                            "",
+                            "pm.test(\"Response has isSuccess\", function () {",
+                            "    var jsonData = pm.response.json();",
+                            "    pm.expect(jsonData).to.have.property('isSuccess');",
+                            "    pm.expect(jsonData.isSuccess).to.be.true;",
+                            "});",
+                            "",
+                            "pm.test(\"Response has shoppingCart\", function () {",
+                            "    var jsonData = pm.response.json();",
+                            "    pm.expect(jsonData).to.have.property('shoppingCart');",
+                            "});"
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
+            "request": {
+                "method": "PATCH",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"quantity\": 5\n}"
+                },
+                "url": {
+                    "raw": "{{baseUrl}}/baskets/{{userName}}/items/{{productId1}}",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "baskets",
+                        "{{userName}}",
+                        "items",
+                        "{{productId1}}"
+                    ]
+                },
+                "description": "Change la quantité d'un article spécifique dans le panier."
+            },
+            "response": []
+        },
+        {
+            "name": "5. Supprimer un article du panier",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "pm.test(\"Status code is 200\", function () {",
+                            "    pm.response.to.have.status(200);",
+                            "});",
+                            "",
+                            "pm.test(\"Response has isSuccess\", function () {",
+                            "    var jsonData = pm.response.json();",
+                            "    pm.expect(jsonData).to.have.property('isSuccess');",
+                            "    pm.expect(jsonData.isSuccess).to.be.true;",
+                            "});",
+                            "",
+                            "pm.test(\"Response has shoppingCart\", function () {",
+                            "    var jsonData = pm.response.json();",
+                            "    pm.expect(jsonData).to.have.property('shoppingCart');",
+                            "});"
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
+            "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                    "raw": "{{baseUrl}}/baskets/{{userName}}/items/{{productId3}}",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "baskets",
+                        "{{userName}}",
+                        "items",
+                        "{{productId3}}"
+                    ]
+                },
+                "description": "Retire un article spécifique du panier."
+            },
+            "response": []
+        },
+        {
+            "name": "6. Supprimer un panier",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "pm.test(\"Status code is 200\", function () {",
+                            "    pm.response.to.have.status(200);",
+                            "});",
+                            "",
+                            "pm.test(\"Response is true\", function () {",
+                            "    var jsonData = pm.response.json();",
+                            "    pm.expect(jsonData).to.be.true;",
+                            "});"
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
+            "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                    "raw": "{{baseUrl}}/baskets/{{userName}}",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "baskets",
+                        "{{userName}}"
+                    ]
+                },
+                "description": "Supprime complètement le panier d'un utilisateur."
+            },
+            "response": []
+        }
+    ],
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "http://localhost:6061",
+            "type": "string"
+        },
+        {
+            "key": "userName",
+            "value": "john.doe",
+            "type": "string"
+        },
+        {
+            "key": "productId1",
+            "value": "a1b2c3d4-5678-90ab-cdef-123456789012",
+            "type": "string"
+        },
+        {
+            "key": "productId2",
+            "value": "b2c3d4e5-6789-01bc-def1-234567890123",
+            "type": "string"
+        },
+        {
+            "key": "productId3",
+            "value": "c3d4e5f6-7890-12cd-ef12-345678901234",
+            "type": "string"
+        }
+    ]
+}
