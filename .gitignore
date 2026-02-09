@@ -407,3 +407,6 @@ serilog.*.json
 !serilog.json
 sources/.DS_Store
 .DS_Store
+
+# Environment variables
+.env

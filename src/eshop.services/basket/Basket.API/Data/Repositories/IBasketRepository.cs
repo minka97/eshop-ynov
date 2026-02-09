@@ -36,4 +36,14 @@ public interface IBasketRepository
     /// A task that represents the asynchronous operation. The task result contains the created shopping cart.
     /// </returns>
     Task<ShoppingCart> CreateBasketAsync(ShoppingCart basket, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Updates the shopping cart in the data store with the provided basket details.
+    /// </summary>
+    /// <param name="basket">The shopping cart object containing updated details for a specific user.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the operation to complete.</param>
+    /// <returns>
+    /// A task that represents the asynchronous operation. The task result is a boolean value indicating whether the update operation was successful.
+    /// </returns>
+    Task<ShoppingCart> UpdateBasketAsync(ShoppingCart basket, CancellationToken cancellationToken = default);
 }

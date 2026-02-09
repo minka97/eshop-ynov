@@ -1,0 +1,584 @@
+{
+	"info": {
+		"_postman_id": "7935d397-2623-4d81-bf99-72d39612033f",
+		"name": "Eshop",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "40702018",
+		"_collection_link": "https://restless-water-460462.postman.co/workspace/My-Workspace~3375504c-c6f1-4193-805e-686bc68b38e7/collection/40702018-7935d397-2623-4d81-bf99-72d39612033f?action=share&source=collection_link&creator=40702018"
+	},
+	"item": [
+		{
+			"name": "Catalog",
+			"item": [
+				{
+					"name": "Creation de Produit",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\":\"Produit B\",\n    \"Categories\":[\"c1\",\"c2\"],\n    \"description\": \"Description Product C\",\n    \"imageFile\" : \"Image file Product C\",\n    \"price\": 399\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{catalog_api_url}}/products",
+							"host": [
+								"{{catalog_api_url}}"
+							],
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Mise à jour de Produit",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\":\"0197f133-c833-4af1-9ce2-6c7202042b80\",\n    \"name\":\"New Product Updated\",\n    \"Categories\":[\"c1\",\"c2\", \"c3\",\"c4\"],\n    \"description\": \"Description Product A\",\n    \"imageFile\" : \"Image file Product A after update\",\n    \"price\": 280\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{catalog_api_url}}/products/0197f133-c833-4af1-9ce2-6c7202042b80",
+							"host": [
+								"{{catalog_api_url}}"
+							],
+							"path": [
+								"products",
+								"0197f133-c833-4af1-9ce2-6c7202042b80"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Recupération de la liste des produits",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{catalog_api_url}}/products?pageNumber=1&pageSize=5",
+							"host": [
+								"{{catalog_api_url}}"
+							],
+							"path": [
+								"products"
+							],
+							"query": [
+								{
+									"key": "pageNumber",
+									"value": "1"
+								},
+								{
+									"key": "pageSize",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Recupération d'un produit",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{catalog_api_url}}/products/0199c3cc-d6e4-45cf-a860-2417ee6417f0",
+							"host": [
+								"{{catalog_api_url}}"
+							],
+							"path": [
+								"products",
+								"0199c3cc-d6e4-45cf-a860-2417ee6417f0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Suppression d'un produit",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{catalog_api_url}}/products/0199c3cc-d6e4-45cf-a860-2417ee6417f0",
+							"host": [
+								"{{catalog_api_url}}"
+							],
+							"path": [
+								"products",
+								"0199c3cc-d6e4-45cf-a860-2417ee6417f0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Récupération des produits par Category",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{catalog_api_url}}/products/category/ ",
+							"host": [
+								"{{catalog_api_url}}"
+							],
+							"path": [
+								"products",
+								"category",
+								" "
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Etat de l'api Catalog",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{catalog_api_url}}/health",
+							"host": [
+								"{{catalog_api_url}}"
+							],
+							"path": [
+								"health"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Basket",
+			"item": [
+				{
+					"name": "Récupérer le panier d'un utilisateur",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{basket_api_url}}/baskets/swn",
+							"host": [
+								"{{basket_api_url}}"
+							],
+							"path": [
+								"baskets",
+								"swn"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Création d'un panier pour utilisateur",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"Cart\": {\n        \"UserName\": \"swn\",\n        \"Items\": [\n            {\n                \"Quantity\": 2,\n                \"Color\": \"Red\",\n                \"Price\": 500,\n                \"ProductId\": \"5334c996-8457-4cf0-815c-ed2b77c4ff61\",\n                \"ProductName\": \"IPhone X\"\n            },\n            {\n                \"Quantity\": 1,\n                \"Color\": \"Blue\",\n                \"Price\": 500,\n                \"ProductId\": \"c67d6323-e8b1-4bdf-9a75-b0d0d2e7e914\",\n                \"ProductName\": \"Samsung 10\"\n            }\n        ]\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{basket_api_url}}/baskets/swn",
+							"host": [
+								"{{basket_api_url}}"
+							],
+							"path": [
+								"baskets",
+								"swn"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Suppression du panier d'un utilisateur",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{basket_api_url}}/baskets/swn",
+							"host": [
+								"{{basket_api_url}}"
+							],
+							"path": [
+								"baskets",
+								"swn"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Etat de l'api Basket",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{basket_api_url}}/health",
+							"host": [
+								"{{basket_api_url}}"
+							],
+							"path": [
+								"health"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Validation d'un panier",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"BasketCheckoutDto\": {\n    \"userName\": \"swn\",\n    \"CustomerId\": \"189dc8dc-990f-48e0-a37b-e6f2b60b9d7d\",\n    \"totalPrice\": 0,\n    \"firstName\": \"swn\",\n    \"lastName\": \"swn\",\n    \"emailAddress\": \"test@test.com\",\n    \"addressLine\": \"34 Charles Street\",\n    \"country\": \"USA\",\n    \"state\": \"Michigan\",\n    \"zipCode\": \"48198\",\n    \"cardName\": \"swn\",\n    \"cardNumber\": \"485-3184\",\n    \"expiration\": \"11/30\",\n    \"cvv\": \"333\",\n    \"paymentMethod\": 1\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{basket_api_url}}/baskets/swn/Checkout",
+							"host": [
+								"{{basket_api_url}}"
+							],
+							"path": [
+								"baskets",
+								"swn",
+								"Checkout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Ordering",
+			"item": [
+				{
+					"name": "Recupérer les ordres d'un client",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ordering_api_url}}/orders?pageIndex=1&pageSize=10",
+							"host": [
+								"{{ordering_api_url}}"
+							],
+							"path": [
+								"orders"
+							],
+							"query": [
+								{
+									"key": "pageIndex",
+									"value": "1"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Créer une commande ou faire un ordre",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"CustomerId\": \"58c49479-ec65-4de2-86e7-033c546291aa\",\n    \"OrderName\": \"ORD_4\",\n    \"ShippingAddress\": {\n      \"FirstName\": \"Valentina\",\n      \"LastName\": \"Legros\",\n      \"EmailAddress\": \"valeg@xmail.com\",\n      \"AddressLine\": \"Wiegand Pass Suite 825\",\n      \"Country\": \"USA\",\n      \"State\": \"Oklahoma\",\n      \"ZipCode\": \"41248\"\n    },\n    \"BillingAddress\": {\n      \"FirstName\": \"Valentina\",\n      \"LastName\": \"Legros\",\n      \"EmailAddress\": \"valeg@xmail.com\",\n      \"AddressLine\": \"Wiegand Pass Suite 825\",\n      \"Country\": \"USA\",\n      \"State\": \"Oklahoma\",\n      \"ZipCode\": \"41248\"\n    },\n    \"Payment\": {\n      \"CardName\": \"CARD_1\",\n      \"CardNumber\": \"875-444-3739\",\n      \"Expiration\": \"12/29\",\n      \"Cvv\": \"455\",\n      \"PaymentMethod\": 1\n    },\n    \"OrderStatus\": 2,\n    \"OrderItems\": [\n      {\n        \"ProductId\": \"5334c996-8457-4cf0-815c-ed2b77c4ff61\",\n        \"ProductName\": \"IPhone X\",\n        \"Quantity\": 2,\n        \"Price\": 500\n      },\n      {\n        \"ProductId\": \"c67d6323-e8b1-4bdf-9a75-b0d0d2e7e914\",\n        \"ProductName\": \"Samsung 10\",\n        \"Quantity\": 1,\n        \"Price\": 500\n      }\n    ]\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ordering_api_url}}/orders",
+							"host": [
+								"{{ordering_api_url}}"
+							],
+							"path": [
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Mettre à jour une commande",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"Id\": \"b566984e-f650-4f87-8aa5-f7396bfbaae4\",\n    \"CustomerId\": \"58c49479-ec65-4de2-86e7-033c546291aa\",\n    \"OrderName\": \"ORD_5\",\n    \"ShippingAddress\": {\n      \"FirstName\": \"Mehmet\",\n      \"LastName\": \"Legros\",\n      \"EmailAddress\": \"valeg@xmail.com\",\n      \"AddressLine\": \"Wiegand Pass Suite 825\",\n      \"Country\": \"USA\",\n      \"State\": \"New York\",\n      \"ZipCode\": \"41248\"\n    },\n    \"BillingAddress\": {\n      \"FirstName\": \"Mehmet\",\n      \"LastName\": \"Legros\",\n      \"EmailAddress\": \"valeg@xmail.com\",\n      \"AddressLine\": \"Wiegand Pass Suite 825\",\n      \"Country\": \"USA\",\n      \"State\": \"Oklahoma\",\n      \"ZipCode\": \"41248\"\n    },\n    \"Payment\": {\n      \"CardName\": \"CARD_2\",\n      \"CardNumber\": \"875-444-3739\",\n      \"Expiration\": \"12/29\",\n      \"CVV\": \"455\",\n      \"PaymentMethod\": 1\n    },\n    \"OrderStatus\": 2,\n    \"OrderItems\": [\n      {\n        \"ProductId\": \"5334c996-8457-4cf0-815c-ed2b77c4ff61\",\n        \"Quantity\": 2,\n        \"Price\": 500\n      },\n      {\n        \"ProductId\": \"c67d6323-e8b1-4bdf-9a75-b0d0d2e7e914\",\n        \"Quantity\": 1,\n        \"Price\": 500\n      }\n    ]\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ordering_api_url}}/orders",
+							"host": [
+								"{{ordering_api_url}}"
+							],
+							"path": [
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Recupérer les commandes d'un client",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ordering_api_url}}/orders/customer/189dc8dc-990f-48e0-a37b-e6f2b60b9d7d",
+							"host": [
+								"{{ordering_api_url}}"
+							],
+							"path": [
+								"orders",
+								"customer",
+								"189dc8dc-990f-48e0-a37b-e6f2b60b9d7d"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Recupérer les informations d'une commande",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ordering_api_url}}/orders/ORD_2",
+							"host": [
+								"{{ordering_api_url}}"
+							],
+							"path": [
+								"orders",
+								"ORD_2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Suppression d'une commande",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{ordering_api_url}}/orders/6250d9b1-143c-483d-884e-f47518630ef0",
+							"host": [
+								"{{ordering_api_url}}"
+							],
+							"path": [
+								"orders",
+								"6250d9b1-143c-483d-884e-f47518630ef0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Etat de l'api Ordering",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ordering_api_url}}/health",
+							"host": [
+								"{{ordering_api_url}}"
+							],
+							"path": [
+								"health"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "YarpApiGateway",
+			"item": [
+				{
+					"name": "Catalog",
+					"item": [
+						{
+							"name": "Recupérer la liste des produits",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{yarp_url}}/catalog-service/products?pageNumber=1&pageSize=5",
+									"host": [
+										"{{yarp_url}}"
+									],
+									"path": [
+										"catalog-service",
+										"products"
+									],
+									"query": [
+										{
+											"key": "pageNumber",
+											"value": "1"
+										},
+										{
+											"key": "pageSize",
+											"value": "5"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Recupérer un produit",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{yarp_url}}/catalog-service/products/5334c996-8457-4cf0-815c-ed2b77c4ff61",
+									"host": [
+										"{{yarp_url}}"
+									],
+									"path": [
+										"catalog-service",
+										"products",
+										"5334c996-8457-4cf0-815c-ed2b77c4ff61"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Recupérer les produits par catégorie",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{yarp_url}}/catalog-service/products/category/c2",
+									"host": [
+										"{{yarp_url}}"
+									],
+									"path": [
+										"catalog-service",
+										"products",
+										"category",
+										"c2"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Basket",
+					"item": [
+						{
+							"name": "Recupérer un panier par son nom user",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{yarp_url}}/basket-service/baskets/svn",
+									"host": [
+										"{{yarp_url}}"
+									],
+									"path": [
+										"basket-service",
+										"baskets",
+										"svn"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Ordering",
+					"item": [
+						{
+							"name": "Recupérer la liste des commandes",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{yarp_url}}/ordering-service/orders?pageIndex=1&pageSize=10",
+									"host": [
+										"{{yarp_url}}"
+									],
+									"path": [
+										"ordering-service",
+										"orders"
+									],
+									"query": [
+										{
+											"key": "pageIndex",
+											"value": "1"
+										},
+										{
+											"key": "pageSize",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Discount",
+			"item": [
+				{
+					"name": "New Request",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

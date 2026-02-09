@@ -1,4 +1,5 @@
 using Basket.API.Data.Repositories;
+using Basket.API.Http;
 using BuildingBlocks.Behaviors;
 using BuildingBlocks.Messaging.MassTransit;
 using BuildingBlocks.Middlewares;
@@ -64,6 +65,12 @@ builder.Services.AddHealthChecks()
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.AddHttpClient<CatalogClient>(client =>
+{
+    client.BaseAddress = new Uri(configuration["HttpSettings:CatalogServiceUrl"] ?? string.Empty);
+});
+
 
 var app = builder.Build();
 

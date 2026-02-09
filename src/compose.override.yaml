@@ -48,7 +48,7 @@
     environment:
       - ASPNETCORE_HTTP_PORTS=${CATALOG_API_PORT}
       - ConnectionStrings__CatalogConnection=Server=catalog.database;Port=${CATALOG_POSTGRES_PORT};Database=${CATALOG_POSTGRES_DB};Username=${CATALOG_POSTGRES_USER};Password=${CATALOG_POSTGRES_PASSWORD}
-
+  
   ### Service Basket ###
 
   basket.database:
@@ -71,6 +71,7 @@
       interval: 5s
       timeout: 5s
       retries: 5
+  
 
   basket.redis:
     restart: always

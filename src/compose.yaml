@@ -21,7 +21,7 @@
     container_name: catalog_api
     build:
       context: .
-      dockerfile: eShop.Services/Catalog/Catalog.API/Dockerfile
+      dockerfile: eshop.services/catalog/Catalog.API/Dockerfile
     networks:
       - catalog_network
     depends_on:
@@ -63,7 +63,7 @@
     container_name: basket_api
     build:
       context: .
-      dockerfile: eShop.Services/Basket/Basket.API/Dockerfile
+      dockerfile: eshop.services/basket/Basket.API/Dockerfile
     networks:
       - basket_network
       - messageBroker_network
@@ -167,4 +167,5 @@ networks:
   messageBroker_network:
     name: messageBroker_network 
       
+
 
