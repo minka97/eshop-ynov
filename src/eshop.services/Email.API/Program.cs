@@ -1,11 +1,11 @@
 using BuildingBlocks.Behaviors;
 using BuildingBlocks.Messaging.MassTransit;
-using BuildingBlocks.Middlewares;
 using Email.API.Configuration;
 using Email.API.Services;
 using FluentValidation;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using ExceptionHandlerMiddleware = BuildingBlocks.Middlewares.ExceptionHandlerMiddleware;
 
 var builder = WebApplication.CreateBuilder(args);
 

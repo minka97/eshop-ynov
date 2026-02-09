@@ -1,6 +1,7 @@
 using Email.API.Events;
 using Email.API.Services;
 using MassTransit;
+using MediatR;
 
 namespace Email.API.EventHandlers;
 
@@ -9,6 +10,10 @@ namespace Email.API.EventHandlers;
 /// Écoute RabbitMQ et envoie un email de confirmation au client
 /// Pattern Event-Driven : Email.API est découplé de Ordering.API
 /// </summary>
+using MassTransit;
+using Email.API.Events;
+using Email.API.Services;
+
 public class OrderCreatedEventConsumer : IConsumer<OrderCreatedEvent>
 {
     private readonly IEmailService _emailService;
@@ -23,15 +28,14 @@ public class OrderCreatedEventConsumer : IConsumer<OrderCreatedEvent>
     public async Task Consume(ConsumeContext<OrderCreatedEvent> context)
     {
         var orderEvent = context.Message;
-        
-        _logger.LogInformation("🎉 OrderCreatedEvent reçu via RabbitMQ : {OrderId}", orderEvent.Order.Id.Value);
+
+        _logger.LogInformation("🎉 OrderCreatedEvent reçu via RabbitMQ : {OrderId}", 
+            orderEvent.Order.Id.Value);
 
         try
         {
-            // Construire le contenu HTML de l'email
             var emailBody = BuildOrderConfirmationEmail(orderEvent);
 
-            // Envoyer l'email au client
             var emailSent = await _emailService.SendEmailAsync(
                 to: orderEvent.Order.ShippingAddress.EmailAddress ?? "noemail@example.com",
                 subject: $"✅ Confirmation de votre commande {orderEvent.Order.OrderName.Value}",
@@ -40,23 +44,13 @@ public class OrderCreatedEventConsumer : IConsumer<OrderCreatedEvent>
             );
 
             if (emailSent)
-            {
-                _logger.LogInformation("✅ Email de confirmation envoyé à {Email}", 
-                    orderEvent.Order.ShippingAddress.EmailAddress);
-            }
+                _logger.LogInformation("✅ Email envoyé à {Email}", orderEvent.Order.ShippingAddress.EmailAddress);
             else
-            {
-                _logger.LogWarning("⚠️ Échec de l'envoi d'email pour la commande {OrderId}", 
-                    orderEvent.Order.Id.Value);
-            }
+                _logger.LogWarning("⚠️ Échec envoi email {OrderId}", orderEvent.Order.Id.Value);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "❌ Erreur lors de l'envoi d'email pour la commande {OrderId}", 
-                orderEvent.Order.Id.Value);
-            
-            // Ne pas lancer d'exception pour ne pas bloquer le traitement
-            // L'email est une fonctionnalité "nice to have", pas critique
+            _logger.LogError(ex, "❌ Erreur email commande {OrderId}", orderEvent.Order.Id.Value);
         }
     }
 
