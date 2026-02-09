@@ -1,6 +1,11 @@
 using Catalog.API.Features.Products.Commands.CreateProduct;
+using Catalog.API.Features.Products.Commands.DeleteProduct;
+using Catalog.API.Features.Products.Commands.ImportProducts;
 using Catalog.API.Features.Products.Commands.UpdateProduct;
+using Catalog.API.Features.Products.Queries.ExportProducts;
 using Catalog.API.Features.Products.Queries.GetProductById;
+using Catalog.API.Features.Products.Queries.GetProductsByCategory;
+using Catalog.API.Features.Products.Queries.GetProducts;
 using Catalog.API.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -39,14 +44,10 @@ public class ProductsController(ISender sender) : ControllerBase
     [HttpGet("category/{category}")]
     [ProducesResponseType(typeof(IEnumerable<Product>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestObjectResult), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<Product>> GetProductsByCategory(string category)
+    public async Task<ActionResult<IEnumerable<Product>>> GetProductsByCategory(string category)
     {
-        // TODO
-        if (string.IsNullOrWhiteSpace(category))
-            return BadRequest("Category is required");
-        
-        var result = await sender.Send(new ());
-        return Ok();
+        var result = await sender.Send(new GetProductsByCategoryQuery(category));
+        return Ok(result.ListProducts);
     }
 
     /// <summary>
@@ -56,12 +57,11 @@ public class ProductsController(ISender sender) : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<Product>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<Product>>> GetProducts(
-        [FromQuery] int pageNumber
-       , [FromQuery] int pageSize)
+        [FromQuery] int pageNumber,
+        [FromQuery] int pageSize)   
     {
-        // TODO
-        var result = await sender.Send(new ()); 
-        return Ok();
+            var result = await sender.Send(new GetProductsQuery(pageNumber, pageSize)); 
+        return Ok(result.Products);
     }
 
     /// <summary>
@@ -88,7 +88,10 @@ public class ProductsController(ISender sender) : ControllerBase
     [ProducesResponseType(typeof(NotFoundObjectResult), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<bool>> UpdateProduct(Guid id, [FromBody] UpdateProductCommand request)
     {
-        // TODO
+        // Vérifier que l'ID de l'URL correspond à l'ID du body
+        if (id != request.Id)
+            return BadRequest("L'ID de l'URL ne correspond pas à l'ID du produit");
+
         var result = await sender.Send(request);
         return Ok(result.IsSuccessful);
     }
@@ -101,12 +104,42 @@ public class ProductsController(ISender sender) : ControllerBase
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(NotFoundObjectResult), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Product>> DeleteProduct(Guid id)
+    public async Task<ActionResult<bool>> DeleteProduct(Guid id)
     {
-        // TODO
-        var result = await sender.Send(new ());
-        return Ok();
+        var result = await sender.Send(new DeleteProductCommand(id));
+        return Ok(result);
     }
-    
-    // TODO : faire une ressource pour importer à partir d'un fichier excel les produits
+
+    /// <summary>
+    /// Exports products to an Excel file (.xlsx).
+    /// </summary>
+    /// <param name="pageNumber">Page number for pagination.</param>
+    /// <param name="pageSize">Number of products per page.</param>
+    /// <returns>An Excel file containing the products.</returns>
+    [HttpGet("export")]
+    [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> ExportProducts(
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 100)
+    {
+        var result = await sender.Send(new ExportProductsQuery(pageNumber, pageSize));
+        return File(result.FileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", result.FileName);
+    }
+
+    /// <summary>
+    /// Imports products from an Excel file (.xlsx).
+    /// </summary>
+    /// <param name="file">The Excel file to import.</param>
+    /// <returns>A result containing the number of created, updated products and any errors.</returns>
+    [HttpPost("import")]
+    [ProducesResponseType(typeof(ImportProductsCommandResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BadRequestObjectResult), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<ImportProductsCommandResult>> ImportProducts(IFormFile file)
+    {
+        if (file is null || file.Length == 0)
+            return BadRequest("Fichier requis");
+
+        var result = await sender.Send(new ImportProductsCommand(file));
+        return Ok(result);
+    }
 }

@@ -32,3 +32,9 @@ public class ProductNotFoundException : NotFoundException
     /// </summary>
     public ProductNotFoundException(Guid id) : base("produit", id) { }
 }
+
+public class ProductsByCategoryNotFoundException : BusinessException
+{
+    public ProductsByCategoryNotFoundException(string category) 
+        : base($"Aucun produit n'est disponible pour la catégorie {category}") { }
+}
