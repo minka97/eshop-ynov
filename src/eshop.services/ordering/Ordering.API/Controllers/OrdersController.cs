@@ -4,6 +4,8 @@ using Ordering.Application.Features.Orders.Commands.CreateOrder;
 using Ordering.Application.Features.Orders.Commands.DeleteOrder;
 using Ordering.Application.Features.Orders.Commands.UpdateOrder;
 using Ordering.Application.Features.Orders.Dtos;
+using Ordering.Application.Features.Orders.Query.GetAllOrder;
+using Ordering.Application.Features.Orders.Query.GetOrderByClient;
 
 namespace Ordering.API.Controllers;
 
@@ -44,6 +46,20 @@ public class OrdersController(ISender sender) : ControllerBase
         return Ok();
     }
 
+    /// <summary>
+    /// Retrieves a list of orders associated with a specific customer identified by their name.
+    /// </summary>
+    /// <param name="clientName">The name of the customer whose orders are being retrieved.</param>
+    /// <returns>A collection of <see cref="OrderDto"/> objects associated with the specified customer.</returns>
+    [HttpGet("customer/name/{clientName}")]
+    [ProducesResponseType(typeof(IEnumerable<OrderDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(NotFoundObjectResult), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<IEnumerable<OrderDto>>> GetOrdersByClientName(string clientName)
+    {
+        var result = await sender.Send(new GetOrderByClientQuery(clientName));
+        return Ok(result.Orders);
+    }
+
 
     /// <summary>
     /// Retrieves a paginated list of orders based on the specified page index and page size.
@@ -54,10 +70,10 @@ public class OrdersController(ISender sender) : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<OrderDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(NotFoundObjectResult), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<IEnumerable<OrderDto>>> GetOrders([FromQuery] int pageIndex ,[FromQuery]  int pageSize)
+    public async Task<ActionResult<IEnumerable<OrderDto>>> GetOrders([FromQuery] int pageIndex = 0, [FromQuery] int pageSize = 10)
     {
-        // TODO
-        return Ok();
+        var result = await sender.Send(new GetAllOrderQuery(pageIndex, pageSize));
+        return Ok(result.Orders);
     }
 
     /// <summary>
@@ -97,7 +113,7 @@ public class OrdersController(ISender sender) : ControllerBase
     [ProducesResponseType(typeof(NotFoundObjectResult), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<bool>> DeleteOrder(Guid orderId)
     {
-        var result = await sender.Send(new DeleteOrderCommand(orderId));
+        var result = await sender.Send(new DeleteOrderCommand(orderId.ToString()));
         return Ok(result.IsSuccess);
     }
 }

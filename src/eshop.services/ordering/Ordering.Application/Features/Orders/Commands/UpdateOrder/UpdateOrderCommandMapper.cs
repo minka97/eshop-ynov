@@ -26,5 +26,9 @@ public static class UpdateOrderCommandMapper
             payment: updatedPayment,
             orderStatus: newOrderDto.OrderStatus
             );
+        foreach (var item in  newOrderDto.OrderItems)
+        {
+            order.AddOrderItem(ProductId.Of(item.ProductId), item.Quantity, item.Price);
+        }
     }
 }
