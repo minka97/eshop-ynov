@@ -14,9 +14,11 @@ public class CreateOrderCommandHandler (IOrderingDbContext orderingDbContext) : 
     public async Task<CreateOrderCommandResult> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
     {
         var order = CreateOrderCommandMapper.CreateNewOrderFromDto(request.Order);
-        // TODO
+        
+        await orderingDbContext.Orders.AddAsync(order, cancellationToken);
+
+        await orderingDbContext.SaveChangesAsync(cancellationToken);
+        
         return new CreateOrderCommandResult(order.Id.Value);
     }
-
-
 }

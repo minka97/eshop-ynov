@@ -10,4 +10,4 @@ namespace Ordering.Application.Features.Orders.Commands.DeleteOrder;
 /// The <see cref="DeleteOrderCommand"/> requires a valid order identifier
 /// to execute the delete operation.
 /// </remarks>
-public record DeleteOrderCommand(Guid OrderId) : ICommand<DeleteOrderCommandResult>;
+public record DeleteOrderCommand(string OrderId) : ICommand<DeleteOrderCommandResult>;
