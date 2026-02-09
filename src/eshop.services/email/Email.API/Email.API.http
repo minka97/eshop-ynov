@@ -1,0 +1,18 @@
+### Email.API - Test Requests
+
+# Envoyer un email de test
+POST http://localhost:6070/api/email/send
+Content-Type: application/json
+
+{
+  "to": "test@example.com",
+  "subject": "Test Email depuis Email.API",
+  "body": "<h1>Bonjour !</h1><p>Ceci est un email de test depuis le microservice Email.API.</p>"
+}
+
+###
+
+# Health Check
+GET http://localhost:6070/health
+
+###
