@@ -23,7 +23,7 @@ public class GetAllOrderQueryHandler(IOrderingDbContext orderingDbContext)
             .Include(o => o.OrderItems)
             .AsNoTracking()
             .OrderBy(o => o.Id)
-            .Skip(request.PageIndex * request.PageSize)
+            .Skip((request.PageIndex - 1) * request.PageSize)
             .Take(request.PageSize)
             .ToListAsync(cancellationToken);
 
