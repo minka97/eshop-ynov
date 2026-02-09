@@ -1,5 +1,6 @@
 using Email.API.Configuration;
 using MailKit.Net.Smtp;
+using MailKit.Security;
 using Microsoft.Extensions.Options;
 using MimeKit;
 
@@ -42,8 +43,9 @@ public class SmtpEmailService : IEmailService
             // Envoyer via SMTP
             using var client = new SmtpClient();
             
-            // Connexion au serveur SMTP (Mailpit)
-            await client.ConnectAsync(_smtpSettings.Server, _smtpSettings.Port, _smtpSettings.EnableSsl, cancellationToken);
+            // Connexion au serveur SMTP
+            var secureOption = _smtpSettings.EnableSsl ? SecureSocketOptions.StartTls : SecureSocketOptions.None;
+            await client.ConnectAsync(_smtpSettings.Server, _smtpSettings.Port, secureOption, cancellationToken);
 
             // Authentification si nécessaire (Mailpit n'en a pas besoin)
             if (!string.IsNullOrEmpty(_smtpSettings.Username) && !string.IsNullOrEmpty(_smtpSettings.Password))

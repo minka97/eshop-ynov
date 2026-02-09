@@ -1,15 +1,16 @@
-using Email.API.Events;
 using Email.API.Services;
 using MassTransit;
+using Ordering.Application.Features.Orders.Dtos;
+using Ordering.Domain.Enums;
 
 namespace Email.API.EventHandlers;
 
 /// <summary>
-/// Consumer pour l'événement OrderCreatedEvent
+/// Consumer pour l'événement OrderDto publié par Ordering.API
 /// Écoute RabbitMQ et envoie un email de confirmation au client
 /// Pattern Event-Driven : Email.API est découplé de Ordering.API
 /// </summary>
-public class OrderCreatedEventConsumer : IConsumer<OrderCreatedEvent>
+public class OrderCreatedEventConsumer : IConsumer<OrderDto>
 {
     private readonly IEmailService _emailService;
     private readonly ILogger<OrderCreatedEventConsumer> _logger;
@@ -20,53 +21,48 @@ public class OrderCreatedEventConsumer : IConsumer<OrderCreatedEvent>
         _logger = logger;
     }
 
-    public async Task Consume(ConsumeContext<OrderCreatedEvent> context)
+    public async Task Consume(ConsumeContext<OrderDto> context)
     {
-        var orderEvent = context.Message;
-        
-        _logger.LogInformation("🎉 OrderCreatedEvent reçu via RabbitMQ : {OrderId}", orderEvent.Order.Id.Value);
+        var order = context.Message;
+
+        _logger.LogInformation("OrderDto recu via RabbitMQ : {OrderId}", order.Id);
 
         try
         {
             // Construire le contenu HTML de l'email
-            var emailBody = BuildOrderConfirmationEmail(orderEvent);
+            var emailBody = BuildOrderConfirmationEmail(order);
 
             // Envoyer l'email au client
             var emailSent = await _emailService.SendEmailAsync(
-                to: orderEvent.Order.ShippingAddress.EmailAddress ?? "noemail@example.com",
-                subject: $"✅ Confirmation de votre commande {orderEvent.Order.OrderName.Value}",
+                to: order.ShippingAddress.EmailAddress ?? "noemail@example.com",
+                subject: $"Confirmation de votre commande {order.OrderName}",
                 body: emailBody,
                 cancellationToken: context.CancellationToken
             );
 
             if (emailSent)
             {
-                _logger.LogInformation("✅ Email de confirmation envoyé à {Email}", 
-                    orderEvent.Order.ShippingAddress.EmailAddress);
+                _logger.LogInformation("Email de confirmation envoye a {Email}",
+                    order.ShippingAddress.EmailAddress);
             }
             else
             {
-                _logger.LogWarning("⚠️ Échec de l'envoi d'email pour la commande {OrderId}", 
-                    orderEvent.Order.Id.Value);
+                _logger.LogWarning("Echec de l'envoi d'email pour la commande {OrderId}",
+                    order.Id);
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "❌ Erreur lors de l'envoi d'email pour la commande {OrderId}", 
-                orderEvent.Order.Id.Value);
-            
-            // Ne pas lancer d'exception pour ne pas bloquer le traitement
-            // L'email est une fonctionnalité "nice to have", pas critique
+            _logger.LogError(ex, "Erreur lors de l'envoi d'email pour la commande {OrderId}",
+                order.Id);
         }
     }
 
     /// <summary>
     /// Construit le template HTML de l'email de confirmation
     /// </summary>
-    private static string BuildOrderConfirmationEmail(OrderCreatedEvent orderEvent)
+    private static string BuildOrderConfirmationEmail(OrderDto order)
     {
-        var order = orderEvent.Order;
-        
         // Calculer le total (somme des items)
         var total = order.OrderItems.Sum(item => item.Price * item.Quantity);
 
@@ -92,30 +88,30 @@ public class OrderCreatedEventConsumer : IConsumer<OrderCreatedEvent>
 <body>
     <div class=""container"">
         <div class=""header"">
-            <h1>✅ Commande Confirmée</h1>
+            <h1>Commande Confirmee</h1>
             <p style=""margin: 5px 0 0 0;"">Merci pour votre achat !</p>
         </div>
-        
+
         <div class=""content"">
             <p>Bonjour <strong>{order.ShippingAddress.FirstName} {order.ShippingAddress.LastName}</strong>,</p>
-            
-            <p>Votre commande a été créée avec succès ! Nous commençons à préparer votre colis.</p>
-            
+
+            <p>Votre commande a ete creee avec succes ! Nous commencons a preparer votre colis.</p>
+
             <div class=""order-details"">
-                <h3>📦 Détails de la commande</h3>
-                <p><strong>Numéro de commande :</strong> {order.OrderName.Value}</p>
+                <h3>Details de la commande</h3>
+                <p><strong>Numero de commande :</strong> {order.OrderName}</p>
                 <p><strong>Statut :</strong> {GetStatusLabel(order.OrderStatus)}</p>
-                
-                <h4 style=""margin-top: 20px; color: #666;"">Produits commandés :</h4>
+
+                <h4 style=""margin-top: 20px; color: #666;"">Produits commandes :</h4>
                 {BuildItemsList(order.OrderItems)}
-                
+
                 <div class=""total"">
-                    Total : {total:C2} €
+                    Total : {total:C2}
                 </div>
             </div>
-            
+
             <div class=""order-details"">
-                <h3>🚚 Adresse de livraison</h3>
+                <h3>Adresse de livraison</h3>
                 <p>
                     {order.ShippingAddress.FirstName} {order.ShippingAddress.LastName}<br>
                     {order.ShippingAddress.AddressLine}<br>
@@ -123,24 +119,24 @@ public class OrderCreatedEventConsumer : IConsumer<OrderCreatedEvent>
                     {order.ShippingAddress.Country}
                 </p>
             </div>
-            
+
             <div class=""order-details"">
-                <h3>💳 Informations de paiement</h3>
+                <h3>Informations de paiement</h3>
                 <p>
                     <strong>Carte :</strong> {order.Payment.CardName}<br>
-                    <strong>Numéro :</strong> **** **** **** {order.Payment.CardNumber.Substring(Math.Max(0, order.Payment.CardNumber.Length - 4))}<br>
+                    <strong>Numero :</strong> **** **** **** {order.Payment.CardNumber.Substring(Math.Max(0, order.Payment.CardNumber.Length - 4))}<br>
                     <strong>Mode :</strong> {GetPaymentMethodLabel(order.Payment.PaymentMethod)}
                 </p>
             </div>
-            
+
             <p style=""margin-top: 20px; padding: 15px; background-color: #e8f5e9; border-left: 4px solid #4CAF50; border-radius: 3px;"">
-                📧 Vous recevrez un nouvel email lorsque votre commande sera expédiée.
+                Vous recevrez un nouvel email lorsque votre commande sera expediee.
             </p>
         </div>
-        
+
         <div class=""footer"">
             <p><strong>Merci d'avoir choisi eShop YNOV !</strong></p>
-            <p style=""font-size: 0.8em; margin-top: 10px;"">Ceci est un email automatique, merci de ne pas y répondre.</p>
+            <p style=""font-size: 0.8em; margin-top: 10px;"">Ceci est un email automatique, merci de ne pas y repondre.</p>
         </div>
     </div>
 </body>
@@ -152,52 +148,52 @@ public class OrderCreatedEventConsumer : IConsumer<OrderCreatedEvent>
     /// <summary>
     /// Construit la liste HTML des items de commande
     /// </summary>
-    private static string BuildItemsList(IReadOnlyList<Ordering.Domain.Models.OrderItem> items)
+    private static string BuildItemsList(List<OrderItemDto> items)
     {
         var itemsHtml = "";
         foreach (var item in items)
         {
             itemsHtml += $@"
                 <div class=""item"">
-                    <strong>🛍️ Produit ID:</strong> {item.ProductId.Value}<br>
-                    <strong>Quantité:</strong> {item.Quantity}<br>
-                    <strong>Prix unitaire:</strong> {item.Price:C2} €<br>
-                    <strong>Sous-total:</strong> {(item.Price * item.Quantity):C2} €
+                    <strong>Produit ID:</strong> {item.ProductId}<br>
+                    <strong>Quantite:</strong> {item.Quantity}<br>
+                    <strong>Prix unitaire:</strong> {item.Price:C2}<br>
+                    <strong>Sous-total:</strong> {(item.Price * item.Quantity):C2}
                 </div>";
         }
         return itemsHtml;
     }
 
     /// <summary>
-    /// Convertit le statut en libellé français
+    /// Convertit le statut en libelle francais
     /// </summary>
-    private static string GetStatusLabel(Ordering.Domain.Enums.OrderStatus status)
+    private static string GetStatusLabel(OrderStatus status)
     {
         return status switch
         {
-            Ordering.Domain.Enums.OrderStatus.Draft => "📝 Brouillon",
-            Ordering.Domain.Enums.OrderStatus.Pending => "⏳ En attente",
-            Ordering.Domain.Enums.OrderStatus.Submitted => "📤 Soumise",
-            Ordering.Domain.Enums.OrderStatus.Cancelled => "❌ Annulée",
-            Ordering.Domain.Enums.OrderStatus.Confirmed => "✅ Confirmée",
-            Ordering.Domain.Enums.OrderStatus.Completed => "✅ Terminée",
-            Ordering.Domain.Enums.OrderStatus.Shipped => "🚚 Expédiée",
-            Ordering.Domain.Enums.OrderStatus.Delivered => "📦 Livrée",
+            OrderStatus.Draft => "Brouillon",
+            OrderStatus.Pending => "En attente",
+            OrderStatus.Submitted => "Soumise",
+            OrderStatus.Cancelled => "Annulee",
+            OrderStatus.Confirmed => "Confirmee",
+            OrderStatus.Completed => "Terminee",
+            OrderStatus.Shipped => "Expediee",
+            OrderStatus.Delivered => "Livree",
             _ => status.ToString()
         };
     }
 
     /// <summary>
-    /// Convertit le mode de paiement en libellé
+    /// Convertit le mode de paiement en libelle
     /// </summary>
     private static string GetPaymentMethodLabel(int paymentMethod)
     {
         return paymentMethod switch
         {
-            1 => "💳 Carte de crédit",
-            2 => "🅿️ PayPal",
-            3 => "🏦 Virement bancaire",
-            _ => "💰 Autre"
+            1 => "Carte de credit",
+            2 => "PayPal",
+            3 => "Virement bancaire",
+            _ => "Autre"
         };
     }
 }
