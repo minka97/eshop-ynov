@@ -44,7 +44,7 @@
       - "6060:${CATALOG_API_PORT}" #http
     environment:
       - ASPNETCORE_HTTP_PORTS=${CATALOG_API_PORT}
-      - ConnectionStrings__CatalogConnection=Server=catalog.database;Port=${CATALOG_POSTGRES_PORT};Database=${CATALOG_POSTGRES_DB};Username=${CATALOG_POSTGRES_USER};Password=${CATALOG_POSTGRES_PASSWORD}
+      - ConnectionStrings__CatalogConnection=Server=catalog.database;Port=5432;Database=${CATALOG_POSTGRES_DB};Username=${CATALOG_POSTGRES_USER};Password=${CATALOG_POSTGRES_PASSWORD}
   
   
   ### Service Basket ###
@@ -66,7 +66,6 @@
       timeout: 5s
       retries: 5
   
-  
   basket.redis:
     restart: always
     ports:
@@ -87,6 +86,7 @@
       - ConnectionStrings__BasketConnection=Server=basket.database;Port=5432;Database=${BASKET_POSTGRES_DB};Username=${BASKET_POSTGRES_USER};Password=${BASKET_POSTGRES_PASSWORD}
       - ConnectionStrings__RedisConnection=basket.redis:6379
       - GrpcSettings__DiscountUrl=http://discount.grpc:6062
+      - CatalogSettings__BaseUrl=http://catalog.api:6060
       - MessageBroker__Host=amqp://ecommerce-rabbitmq-server:5672
       - MessageBroker__UserName=${RABBITMQ_USER}
       - MessageBroker__Password=${RABBITMQ_PASSWORD}

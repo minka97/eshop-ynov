@@ -3,10 +3,8 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Ordering.Application.Features.Orders.Data;
-using Ordering.Application.Services;
 using Ordering.Infrastructure.Data;
 using Ordering.Infrastructure.Data.Interceptors;
-using Ordering.Infrastructure.Services;
 
 namespace Ordering.Infrastructure;
 
@@ -24,9 +22,6 @@ public static class ServiceExtension
             options.AddInterceptors(serviceProvider.GetServices<ISaveChangesInterceptor>());
             options.UseSqlServer(connectionString);
         });
-
-        // Enregistrer le service d'envoi d'emails
-        services.AddSingleton<IEmailService, EmailService>();
         
         return services;
     }
