@@ -29,18 +29,27 @@ public class DiscountServiceServer(DiscountContext dbContext, ILogger<DiscountSe
     /// <exception cref="RpcException">
     /// Thrown if no discount is found for the specified product name.
     /// </exception>
-    public override async Task<CouponModel> GetDiscount(GetDiscountRequest request, ServerCallContext context)
+    public override async Task<GetDiscountResponse> GetDiscount(GetDiscountRequest request, ServerCallContext context)
     {
+        var discountResponse = new GetDiscountResponse();
+
         logger.LogInformation("Retrieving discount for {ProductName}", request.ProductName);
         
-        var coupon = await dbContext.Coupons.FirstOrDefaultAsync(x => x.ProductName == request.ProductName);
+        var coupons = await dbContext.Coupons
+            .Where(c => c.ProductName == request.ProductName &&
+                        (c.Percentage.HasValue || 
+                         (!string.IsNullOrEmpty(request.Code) && 
+                          c.Type == Coupon.CouponType.Code && 
+                          c.Code == request.Code)))
+            .ToListAsync();
+
+        logger.LogInformation("Discount retrieved for {ProductName}: {Amount} coupons", request.ProductName, coupons.Count);
+
+        discountResponse.Coupons.AddRange(
+            coupons.Select(c => c.Adapt<CouponModel>())
+        );
         
-        if (coupon == null)
-            throw new RpcException(new Status(StatusCode.NotFound, $"Coupon with name {request.ProductName} not found"));
-        
-        logger.LogInformation("Discount retrieved for {ProductName}: {Amount}", coupon.ProductName, coupon.Amount);
-        
-        return coupon.Adapt<CouponModel>();
+        return discountResponse;
     }
 
     /// <summary>

@@ -13,4 +13,4 @@ namespace Basket.API.Features.Baskets.Commands.CreateBasket;
 /// <param name="Cart">
 /// The shopping cart object containing user details and a collection of items to be included in the basket.
 /// </param>
-public record CreateBasketCommand(ShoppingCart Cart) : ICommand<CreateBasketCommandResult>;
+public record CreateBasketCommand(ShoppingCart Cart, string code) : ICommand<CreateBasketCommandResult>;
